@@ -1,0 +1,242 @@
+// ═══════════════════════════════════════════════════════════════
+// Niri Config v25.11 - Миграция с bspwm
+// ═══════════════════════════════════════════════════════════════ ──── Input: клавиатура ────
+input {
+    keyboard {
+        xkb {
+            layout "us,ru"
+            options "grp:caps_toggle"
+        }
+        numlock
+    }
+    touchpad {
+        tap
+        natural-scroll
+    }
+}
+
+// ──── Outputs: мониторы ────
+// Проверь точные имена через: niri msg outputs
+output "DP-2" {
+    mode "1920x1080@144.002"
+    position x=0 y=0
+    scale 1.0
+}
+
+output "HDMI-A-1"{
+    mode "1920x1080@60.0"
+    position x=1920 y=0
+    scale 1.0
+}
+
+// ──── Layout: отступы, границы ────
+layout {
+    gaps 12  // аналог window_gap
+
+    focus-ring {
+        width 2
+        active-color "#7fc8ff"
+        inactive-color "#505050"
+    }
+
+    border {
+        width 2
+        active-color "#c0c0c0"
+        inactive-color "#606060"
+        urgent-color "#9b0000"
+    }
+
+    // Фокус следует за курсором (аналог focus_follows_pointer)
+    // focus-follows-mouse max-scroll-amount="0%"
+}
+
+// ──── Автозапуск ────
+spawn-at-startup "dunst"
+spawn-at-startup "gammastep"
+spawn-at-startup "awww-daemon"
+spawn-at-startup "waybar"
+
+// Воркспейсы
+workspace "1:browser" {
+	open-on-output "HDMI-A-1"
+}
+
+workspace "2:work" {
+	open-on-output "DP-2"
+}
+
+workspace "3:chat" {
+	open-on-output "HDMI-A-1"
+}
+
+workspace "4:games" {
+	open-on-output "DP-2"
+}
+
+workspace "5:any" {
+	open-on-output "HDMI-A-1"
+}
+
+workspace "6:terminal" {
+	open-on-output "HDMI-A-1"
+}
+
+// --- Автозапуск скриптов ---
+
+spawn-sh-at-startup "sleep && ~/.config/niri/scripts/set-wallpapper.sh"
+
+// ──── Window rules: правила для окон ────
+// Zellij на рабочий стол 9 (используем именованные воркспейсы)
+window-rule {
+    match app-id="kitty" title=".*my_session.*"
+    open-on-workspace "6:terminal"
+}
+
+// MAX PORT 
+window-rule {
+	match app-id="max"
+	open-floating true
+	default-column-width { fixed 1280; }
+    	default-window-height { fixed 960; }
+}
+
+
+// kitty всегда в тайлинге
+window-rule {
+    match app-id="kitty"
+    open-floating false
+}
+
+window-rule{
+	match app-id="zen"
+	open-on-workspace "1:browser"
+}
+
+window-rule{
+	match app-id="dev.zed.Zed"
+	open-on-workspace "2:work"
+}
+
+window-rule{
+	match app-id="org.telegram.desktop"
+	open-on-workspace "3:chat"
+}
+
+window-rule{
+	match app-id="steam"
+	open-on-workspace "4:games"
+}
+
+window-rule{
+	match app-id="lutris"
+	open-on-workspace "4:games"
+}
+
+
+
+// ──── Binds: горячие клавиши ────
+binds {
+    // Терминал и лаунчер
+    Mod+T { spawn "kitty"; }
+    Mod+D { spawn "fuzzel"; }
+
+    //Подсказка
+    Mod+Shift+Slash {show-hotkey-overlay;}
+
+    //Скрин
+    Print {screenshot;}
+
+    //Gammastep
+    F6 hotkey-overlay-title="Gammastep on/off" { spawn-sh "~/.config/niri/scripts/gammastep-toggle.sh"; }
+
+    //Обзор всех окон
+    Mod+O repeat=false { toggle-overview; }
+
+    Mod+Comma { consume-window-into-column; } 
+    Mod+Period { expel-window-from-column; }
+    Mod+BracketLeft { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+
+    // Переключение рабочих столов (1-9)
+    Mod+1 { focus-workspace  "1:browser"; }
+    Mod+2 { focus-workspace  "2:work"; }
+    Mod+3 { focus-workspace  "3:chat"; }
+    Mod+4 { focus-workspace  "4:games"; }
+    Mod+5 { focus-workspace  "5:any";}
+    Mod+6 { focus-workspace  "6:terminal"; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    // Перемещение колонок на рабочие столы
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+
+    // Навигация (HJKL)
+    Mod+H { focus-column-left; }
+    Mod+L { focus-column-right; }
+    Mod+K { focus-window-up; }
+    Mod+J { focus-window-down; }
+
+    Mod+Page_Down      { focus-workspace-down; }
+    Mod+Page_Up        { focus-workspace-up; }
+    Mod+U              { focus-workspace-down; }
+    Mod+I              { focus-workspace-up; }
+    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
+    Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
+    Mod+Ctrl+U         { move-column-to-workspace-down; }
+    Mod+Ctrl+I         { move-column-to-workspace-up; }
+
+
+    //Навигация между мониторами
+    Mod+Left  { focus-monitor-left; }
+    Mod+Right { focus-monitor-right; }
+    Mod+Up    { focus-monitor-up; }
+    Mod+Down  { focus-monitor-down; }
+
+    //Перенос между мониторами
+    Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+    Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
+
+
+
+    // Перемещение колонок
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+L { move-column-right; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+J { move-window-down; }
+
+    // Изменение размера (в % от экрана)
+    Mod+Ctrl+H { set-column-width "-10%"; }
+    Mod+Ctrl+L { set-column-width "+10%"; }
+    Mod+Ctrl+K { set-window-height "+10%"; }
+    Mod+Ctrl+J { set-window-height "-10%"; }
+
+    // Закрыть окно
+    Mod+C { close-window; }
+
+    // Полноэкранный / максимизация
+    Mod+F { fullscreen-window; }
+    Mod+M { maximize-column; }
+
+    Mod+W { toggle-column-tabbed-display; }
+
+    // Плавающий режим
+    Mod+V { toggle-window-floating; }
+
+    // Выход
+    Mod+Shift+E { quit; }
+}
