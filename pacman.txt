@@ -14,6 +14,7 @@ ttf-envycoder-nerd
 ttf-hack-nerd
 ttf-liberation
 ttf-proggyclean-nerd
+ttf-jetbrains-mono-nerd
 networkmanager
 waybar
 obsidian
@@ -35,3 +36,19 @@ unzip
 vlc
 zoxide
 zsh-syntax-highlighting
+base-devel
+clang 
+llvm 
+lldb
+cmake 
+make 
+gdb
+python
+python-pip
+python-virtualenv
+python-setuptools
+python-numpy
+pyright
+nodejs 
+npm
+
